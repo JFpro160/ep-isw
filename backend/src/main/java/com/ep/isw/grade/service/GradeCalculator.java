@@ -30,8 +30,11 @@ public class GradeCalculator {
 
     public GradeReport calculate(GradeInput input) {
         Objects.requireNonNull(input, "gradeInput");
-        List<Evaluation> evaluations = input.examsStudents().stream().map(this::toEvaluation)
-                .collect(Collectors.toList());
+        List<EvaluationInput> rawEvaluations = input.examsStudents();
+        if (rawEvaluations.size() > 10) {
+            throw new IllegalArgumentException("Solo se permiten hasta 10 evaluaciones por estudiante");
+        }
+        List<Evaluation> evaluations = rawEvaluations.stream().map(this::toEvaluation).collect(Collectors.toList());
         double totalWeight = evaluations.stream().mapToDouble(Evaluation::weightPercentage).sum();
         double baseScore = evaluations.stream().mapToDouble(Evaluation::contribution).sum();
 

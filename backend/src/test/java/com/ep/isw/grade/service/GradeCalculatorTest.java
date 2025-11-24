@@ -1,6 +1,7 @@
 package com.ep.isw.grade.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.ep.isw.grade.model.EvaluationInput;
 import com.ep.isw.grade.model.GradeInput;
@@ -78,5 +79,19 @@ class GradeCalculatorTest {
         assertThat(report.finalScore()).isEqualTo(20);
         assertThat(report.extraPointsApplied()).isEqualTo(0.5);
         assertThat(report.warnings()).anyMatch(message -> message.contains("recortó"));
+    }
+
+    @Test
+    void shouldRejectWhenMoreThanTenEvaluationsProvided() {
+        List<EvaluationInput> manyEvaluations = List.of(new EvaluationInput("E1", 10, 10),
+                new EvaluationInput("E2", 10, 10), new EvaluationInput("E3", 10, 10), new EvaluationInput("E4", 10, 10),
+                new EvaluationInput("E5", 10, 10), new EvaluationInput("E6", 10, 10), new EvaluationInput("E7", 10, 10),
+                new EvaluationInput("E8", 10, 10), new EvaluationInput("E9", 10, 10),
+                new EvaluationInput("E10", 10, 10), new EvaluationInput("E11", 10, 10));
+
+        GradeInput input = new GradeInput(manyEvaluations, true, List.of(true));
+
+        assertThatThrownBy(() -> calculator.calculate(input)).isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("hasta 10 evaluaciones");
     }
 }
