@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: naruto-manager
+
+security:
+  token:
+    issuer: exam-kit
+    secret: ${SECURITY_TOKEN_SECRET:change-me}
+    ttl-seconds: 3600
