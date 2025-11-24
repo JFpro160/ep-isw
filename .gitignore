@@ -1,4 +1,5 @@
 backend/target/
+.m2/
 .mvn/
 *.iml
 .idea/
