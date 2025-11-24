@@ -16,10 +16,15 @@ Este repositorio mezcla dos cosas que el profe mencionó: tener claro qué revis
 El folder `backend` incluye un Spring Boot 3 (Java 17) con:
 
 - **Arquitectura DDD en capas**: `presentation` (controllers/DTO), `application` (use cases), `domain` (modelos/reglas), `infrastructure` (repositorios in-memory y config). Cambiar a Postgres solo exige crear repos que implementen las interfaces.
-- **Endpoints alineados con el caso**:
+- **Endpoints alineados con el caso original de práctica**:
   - `POST /api/auth/register` y `POST /api/auth/login` para manejar usuarios y emitir tokens firmados (HMAC) sin depender de librerías externas.
   - `POST /api/characters`, `GET /api/characters`, `GET /api/characters/{id}`; protegidos por JWT y validados con Bean Validation.
   - `POST /api/comments` y `GET /api/comments/{characterId}` con políticas sencillas anti-spam.
+- **Módulo `grade` listo para el examen real**:
+  - Modelos `Evaluation`, `GradeInput`, `GradeReport` y políticas `AttendancePolicy` / `ExtraPointsPolicy` encapsulan las reglas RF01-RF05.
+  - `GradeCalculator` es determinista, libre de estado compartido y respeta RNF01-RNF04 (nota máxima 20, cálculo puro <300 ms, soporta concurrencia porque es inmutable).
+  - `backend/grade-input-sample.json` es un input válido; puedes editarlo o crear uno nuevo para cada estudiante.
+  - `com.ep.isw.grade.cli.GradeCli` permite ejecutar el cálculo desde la terminal usando JSON.
 - **Seguridad**: Spring Security stateless con filtro propio que valida tokens creados por `TokenService`. Passwords se guardan con `BCryptPasswordEncoder`. Puedes intercambiar el servicio por Basic Auth o por JWT real (jjwt/Java JWT) si te lo piden.
 - **Pruebas unitarias**: servicios y controladores tienen tests con `@WebMvcTest` + `MockMvc` y tests del dominio para cubrir reglas básicas (la cobertura y los assertions ayudan a hablar de calidad ante el profe o Sonar).
 - **Configuración lista**: `application.yaml` con llaves del token, propiedades para switch a Postgres/H2 y perfiles `dev` / `test`.
@@ -31,6 +36,16 @@ cd backend
 mvn clean verify
 ./mvnw spring-boot:run # si decides usar wrapper
 ```
+
+### Ejecutar el Grade Calculator por terminal
+```bash
+cd backend
+mvn -q -DskipTests package
+java -cp target/exam-backend-0.0.1-SNAPSHOT.jar \
+  com.ep.isw.grade.cli.GradeCli \
+  grade-input-sample.json
+```
+Esto imprimirá un `GradeReport` con nota base, extra aplicado, nota final, lista de evaluaciones y advertencias. Cambia el JSON según los datos del estudiante. Como el cálculo es determinista y la clase es stateless, múltiples docentes (≤50) pueden ejecutar el mismo jar simultáneamente sin interferirse.
 
 Por defecto usa repos in-memory, ideal si el profe insiste en “sin BD”. Cambia `CharacterRepository` por una implementación JPA si necesitas persistencia real.
 
@@ -79,6 +94,7 @@ Por defecto usa repos in-memory, ideal si el profe insiste en “sin BD”. Camb
 - **RF vs RNF**: RF describen comportamientos observables; RNF limitan cómo se cumple (seguridad, performance, usabilidad). Separarlos evita que pruebas omitan constraints y que la arquitectura ignore SLAs.
 - **UML**: Casos de uso para clarificar expectativas con stakeholders; secuencia ayuda a descubrir integraciones, mensajes y responsabilidades → menos bugs de integración.
 - **DevOps / CI**: pipelines automáticos garantizan build reproducible, ejecutan tests/sonar en cada push, reducen riesgo de regresiones y mantienen trazabilidad de cambios.
+- **GradeCalculator**: explica que el flujo es: cargar evaluaciones (`examsStudents`), validar asistencia (`hasReachedMinimumClasses`), votar política (`allYearsTeachers`) y generar `GradeReport`. Se reportan inconsistencias (pesos ≠100, falta de asistencia, extras evitados) como exige RF05.
 - **SonarQube**: conoce métricas (Bugs, Vulnerabilidades, Code Smells, Coverage, Duplication). Explica cómo Quality Gates evitan deuda técnica antes de fusionar.
 - **Docker local**: compone `postgres + sonar` si lo piden (usa el `docker-compose.yml` de clase o prepara un snippet).
 

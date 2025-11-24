@@ -1,0 +1,21 @@
+{
+  "examsStudents": [
+    {
+      "name": "Parcial 1",
+      "score": 15.5,
+      "weightPercentage": 30
+    },
+    {
+      "name": "Proyecto",
+      "score": 18.0,
+      "weightPercentage": 40
+    },
+    {
+      "name": "Final",
+      "score": 17.0,
+      "weightPercentage": 30
+    }
+  ],
+  "hasReachedMinimumClasses": true,
+  "allYearsTeachers": [true, true, true]
+}
