@@ -26,7 +26,7 @@ public final class GradeCli {
             System.err.println("No se encontró el archivo: " + inputPath);
             System.exit(1);
         }
-        ObjectMapper mapper = new ObjectMapper();
+        ObjectMapper mapper = new ObjectMapper().findAndRegisterModules();
         GradeInput input = mapper.readValue(Files.readAllBytes(inputPath), GradeInput.class);
         GradeCalculator calculator = new GradeCalculator(new AttendancePolicy(), new ExtraPointsPolicy(),
                 Clock.systemUTC());
