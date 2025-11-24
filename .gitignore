@@ -1,4 +1,5 @@
 backend/target/
+backend/.maven-cache/
 .m2/
 .mvn/
 *.iml
