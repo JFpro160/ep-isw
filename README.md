@@ -7,6 +7,7 @@ Implementación del módulo de cálculo de la nota final pedido en el examen par
 - **Políticas**: `AttendancePolicy` y `ExtraPointsPolicy` encapsulan reglas independientes y devuelven objetos de resultado para mantener bajo acoplamiento y alta cohesión.
 - **Servicio**: `GradeCalculator` orquesta validaciones, suma ponderada, aplica asistencia y extras (máximo final 20). No usa estado compartido, por lo que soporta múltiples ejecuciones concurrentes (RNF02) y produce siempre el mismo resultado ante la misma entrada (RNF03).
 - **CLI**: `GradeCli` permite ejecutar el cálculo desde terminal leyendo JSON; imprime un `GradeReport` en formato legible y sirve como reporte para RF05.
+- **UML**: el diagrama completo está en `backend/docs/grade-calculator.puml` (PlantUML). Puedes renderizarlo con cualquier visor PlantUML para presentarlo al profesor.
 
 ## Preparación
 ```bash
@@ -61,8 +62,8 @@ Si necesitas evidenciar calidad:
 export SONAR_HOST_URL=http://localhost:9000
 export SONAR_TOKEN=<token>
 cd backend
-mvn clean verify
-mvn -Psonar org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
+mvn -Dmaven.repo.local=.maven-cache clean verify
+mvn -Dmaven.repo.local=.maven-cache -Psonar org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
   -Dsonar.login=$SONAR_TOKEN -Dsonar.host.url=$SONAR_HOST_URL \
   -Dsonar.projectKey=grade-calculator
 ```

@@ -1,0 +1,64 @@
+@startuml CS-GradeCalculator
+
+package "CLI" {
+  class GradeCli {
+    +main(args: String[]): void
+  }
+}
+
+package "Service" {
+  class GradeCalculator {
+    -attendancePolicy: AttendancePolicy
+    -extraPointsPolicy: ExtraPointsPolicy
+    -clock: Clock
+    +calculate(input: GradeInput): GradeReport
+  }
+}
+
+package "Policies" {
+  class AttendancePolicy {
+    +review(hasMin: boolean): AttendanceResult
+  }
+  class ExtraPointsPolicy {
+    +review(votes: List<Boolean>): ExtraPointsResult
+  }
+}
+
+package "Model" {
+  class GradeInput {
+    +examsStudents(): List<EvaluationInput>
+    +hasReachedMinimumClasses(): boolean
+    +allYearsTeachers(): List<Boolean>
+  }
+  class GradeReport {
+    +baseScore: double
+    +extraPointsApplied: double
+    +finalScore: double
+    +attendanceSatisfied: boolean
+    +extraGranted: boolean
+    +evaluations: List<EvaluationBreakdown>
+    +warnings: List<String>
+    +avoidedExtras: List<String>
+    +generatedAt: Instant
+  }
+  class EvaluationInput {
+    +name: String
+    +score: double
+    +weightPercentage: double
+  }
+  class Evaluation {
+    +contribution(): double
+  }
+}
+
+GradeCli --> GradeCalculator
+GradeCalculator --> AttendancePolicy
+GradeCalculator --> ExtraPointsPolicy
+GradeCalculator --> GradeReport
+GradeCalculator --> GradeInput
+GradeInput "1" o-- "*" EvaluationInput
+GradeReport "1" o-- "*" Evaluation
+AttendancePolicy --> AttendanceResult
+ExtraPointsPolicy --> ExtraPointsResult
+
+@enduml
