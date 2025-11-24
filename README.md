@@ -70,6 +70,10 @@ Por defecto usa repos in-memory, ideal si el profe insiste en “sin BD”. Camb
 - Si quieres solo el backend sin Sonar: `docker compose up -d backend`.
 - Cuando termines: `docker compose down` y `docker volume rm ep-isw_sonarqube_*` si deseas limpiar los datos.
 
+### Cobertura y calidad local
+- El pipeline de `mvn clean verify` ejecuta Spotless + pruebas + JaCoCo. Con los tests actuales la cobertura global supera el 80 % (≈83 % según `target/site/jacoco/jacoco.xml`), así que puedes hablar de “Quality Gate listo” incluso sin Sonar.
+- Si agregas nuevas features, escribe o actualiza tests antes de repetir `mvn clean verify`; así mantienes la cobertura por encima del umbral sin sorpresas.
+
 ## 3. Cheatsheet para responder al profe
 - **Arquitectura REST vs Monolito**: resalta escalabilidad, despliegues independientes, alineación con consumo multiplataforma. Señala costos extra de complejidad si el dominio es pequeño.
 - **RF vs RNF**: RF describen comportamientos observables; RNF limitan cómo se cumple (seguridad, performance, usabilidad). Separarlos evita que pruebas omitan constraints y que la arquitectura ignore SLAs.

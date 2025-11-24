@@ -1,10 +1,12 @@
 package com.ep.isw.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.ep.isw.application.dto.CharacterDto;
 import com.ep.isw.application.service.CharacterService;
 import com.ep.isw.application.usecase.CreateCharacterCommand;
+import com.ep.isw.domain.exception.DomainException;
 import com.ep.isw.infrastructure.persistence.InMemoryCharacterRepository;
 import java.time.Clock;
 import java.time.Instant;
@@ -33,5 +35,14 @@ class CharacterServiceTest {
         assertThat(dto.createdAt()).isEqualTo(Instant.now(clock));
 
         assertThat(service.list()).hasSize(1);
+    }
+
+    @Test
+    void rejectsDuplicatedNames() {
+        UUID creator = UUID.randomUUID();
+        service.create(new CreateCharacterCommand("Dana", "Central", "Analyst", 80, creator));
+
+        assertThatThrownBy(() -> service.create(new CreateCharacterCommand("Dana", "Central", "Analyst", 70, creator)))
+                .isInstanceOf(DomainException.class).hasMessageContaining("Ya existe un personaje");
     }
 }
