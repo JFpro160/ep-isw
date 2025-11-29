@@ -2,6 +2,15 @@
 
 Implementación del módulo de cálculo de la nota final pedido en el examen parcial. El objetivo es permitir que un docente ingrese las evaluaciones (`examsStudents`), confirme si el estudiante cumplió la asistencia mínima (`hasReachedMinimumClasses`) y provea la política colectiva de puntos extra (`allYearsTeachers`). El sistema genera un `GradeReport` determinista que respeta los RF/RNF del enunciado.
 
+
+
+## Resultados de calidad y análisis SonarQube
+
+### Calidad requerida
+![Calidad requerida](quality.png)
+
+### Resultado del alumno en SonarQube
+![Resultado SonarQube](sonnar.png)
 ## Arquitectura
 - **Modelo**: `Evaluation`, `GradeInput`, `GradeReport` representan entradas y salidas; `GradeReport` incluye detalle de aportes, advertencias (pesos inconsistentes, asistencia faltante, extras evitados) y la marca de tiempo de generación.
 - **Políticas**: `AttendancePolicy` y `ExtraPointsPolicy` encapsulan reglas independientes y devuelven objetos de resultado para mantener bajo acoplamiento y alta cohesión.
